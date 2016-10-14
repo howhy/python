@@ -1,0 +1,264 @@
+{% extends 'cmdb/index.html' %}
+
+{% block page-content %}
+    <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
+        <ol class="breadcrumb page-breadcrumb pull-left h4">
+            <li class=""><i class="fa fa-user "></i><span>用户管理</span></li>
+        </ol>
+    </div>
+    <div class="page-content">
+        <div class="panel">
+            <div class="panel-heading" style="background-color: #efefef">用户信息<span class="pull-right"><!--a href="#" class="btn  btn-xs btn-green" onclick="showuserpanel();" ><i class="fa fa-plus"></i>增加</a--></span></div>
+            <div class="panel-body" style="padding:0px">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>用户ID</th>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>角色</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in userobj %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            {% ifequal user.is_superuser 1 %}
+                                <td>管理员</td>
+                            {% else %}
+                                <td>用户</td>
+                            {% endifequal %}
+                            <td>{{ user.date_joined|date:"Y-m-d H:i:s"  }}</td>
+                            <td><a href="{% url 'createuser' %}?action=edit&id={{ user.id }}"  class="btn  btn-xs  btn-grey" ><i class="fa fa-edit"></i>编辑</a><a href="{% url 'createuser' %}?action=del&id={{ user.id }}"   class="btn  btn-xs  btn-red" ><i class="fa fa-trash-o"></i>删除</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <ul id="userTab" class="nav nav-tabs">
+            <li class="active"><a href="#basic" data-toggle="tab">创建</a></li>
+            <li><a href="#changepwd" data-toggle="tab">修改</a></li>
+            <li><a href="#permission" data-toggle="tab">权限</a></li>
+        </ul>
+        <div id="userTabContent" class="tab-content row" style="margin: 0px">
+            <div class="tab-pane fade in active col-sm-4" id="basic">
+                <form class="form-horizontal userform" role="form" action="{% url 'createuser' %}" method="post" >{% csrf_token %}
+                    <div class="form-group">
+                        <label for="username" class="col-sm-3 control-label">用户名</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="hide" name="id" value="{{ usereditobj.id }}">
+                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="{{ usereditobj.username }}">
+                        </div>
+                    </div>
+                    {% if not usereditobj.id %}
+                        <div class="form-group">
+                            <label for="password" class="col-sm-3 control-label">密码</label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmpass" class="col-sm-3 control-label">确认密码</label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" name="confirmpass" id="confirmpass" placeholder="Confirm Password" >
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="email" class="col-sm-3 control-label">邮箱</label>
+                        <div class="col-sm-6">
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Email" value="{{ usereditobj.email }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="headimg" class="col-sm-3 control-label">角色</label>
+                        <div class="col-sm-6">
+                            <select name="superuser" class="form-control">
+                                <option value="0" {% ifequal usereditobj.is_superuser 0 %}selected {% endifequal %}>用户</option>
+                                <option value="1" {% ifequal usereditobj.is_superuser 1 %}selected {% endifequal %}>管理员</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                                <span class="col-sm-offset-4">
+                                    <button type="submit" class="btn  btn-blue  btn-sm"  >保存</button>
+                                </span>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane fade col-md-11" id="changepwd">
+                <div class="col-md-5">
+                    <form class="form-horizontal userform" role="form" action="{% url 'createuser' %}" method="post" >{% csrf_token %}
+                        <div class="form-group">
+                            <label for="username" class="col-sm-3 control-label">用户名</label>
+                            <div class="col-sm-6">
+                                <select name="changeusername" class="form-control">
+                                    {% for user in userobj %}
+                                        <option value="{{ user.id }}" selected="selected">{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="col-sm-3 control-label">密码</label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmpass" class="col-sm-3 control-label">确认密码</label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" name="confirmpass" id="confirmpass" placeholder="Confirm Password" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                                <span class="col-sm-offset-4">
+                                    <button type="submit" class="btn  btn-blue btn-sm"  >保存</button>
+                                </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form class="form-horizontal" role="form" action="{% url 'createuser' %}" method="post" id="userform">{% csrf_token %}
+                        <div class="form-group ">
+                            <label for="username" class="col-sm-3 control-label">用户名</label>
+                            <div class="col-sm-6">
+                                <select name="username" id='userselect' class="form-control">
+                                    {% for user in userobj %}
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="username" class="col-sm-3 control-label">权限</label>
+                            <div class="col-sm-6">
+                                <select name="user_perm1" id="user_perm1" class="form-control" size="10" style="height: 180px" multiple="multiple">
+                                    {% for perm in permlist %}
+                                        <option value="{{ perm.id }}"  style="height: 10px" class="disabled" >{{ perm.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!--div class="col-xs-1"> <span id="lright" class="fa fa-arrow-right  " style="padding-top: 60px"></span>
+                            <span id="rleft" class="fa fa-arrow-left" style="padding-top: 10px"></span></div>
+                           <div class="col-sm-4">
+                                  <select name="user_perm2" id="user_perm2" class="form-control" size="10" style="height: 150px">
+
+                                  </select>
+                              </div-->
+                        </div>
+                        <div class="form-group">
+                                <span class="col-sm-offset-4">
+                                    <button type="submit" class="btn  btn-blue btn-sm "  >保存</button>
+                                </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="tab-pane fade col-sm-5" id="permission">
+            </div>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}
+{% block js%}
+    <script type="text/javascript">
+        function getCsrf() {
+            return $("input[name='csrfmiddlewaretoken']").val();
+        }
+        $(document).ready(function() {
+            $('.userform').bootstrapValidator({
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    username: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The username is required'
+                            },
+                            stringLength: {
+                                min: 5,
+                                max: 30,
+                                message: 'The username must be more than 6 '
+                            },
+                            regexp: {
+                                regexp: /^[a-zA-Z0-9_]+$/,
+                                message: 'The username can only consist of alphabetical, number and underscore'
+                            }
+                        }
+                    },
+                    password:{
+                        validators:{
+                            notEmpty:{
+                                'message': "the password is required "
+                            },
+                            stringLength:{
+                                min:8,
+                                max:30,
+                                message:'The password must be more than 8 '
+                            },
+                            identical:{
+                                field:'confirmpass',
+                                message:'The password and its confirm are not the same'
+                            },
+                        }
+                    },
+                    email: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The email is required'
+                            },
+                            emailAddress: {
+                                message: 'The input is not a valid email address'
+                            }
+                        }
+                    },
+                    confirmpass:{
+                        validators:{
+                            notEmpty:{
+                                'message': "the password is required "
+                            },
+                            stringLength:{
+                                min:8,
+                                max:30,
+                                message:'The password must be more than 8 '
+                            },
+                            identical:{
+                                field:'password',
+                                message:'The password and its confirm are not the same'
+                            },
+                        }
+                    },
+                }
+            });
+            $('#userselect').change(function () {
+                $('#user_perm1 ').find('option:selected').attr('selected',false)
+                $('#user_perm1 ').find('option:disabled').attr('disabled',false)
+                var selectValue=$('#userselect').val()
+                $.post('{% url 'cmdbpermission'%}',{'id':selectValue,'csrfmiddlewaretoken':getCsrf()},function(callback) {
+                    $.each(jQuery.parseJSON(callback),function (n,value) {
+                        $('#user_perm1 option').each(function () {
+                            if($(this).val()==value)
+                            {
+                                $(this).attr('selected',true)
+                                $(this).attr('disabled',true)
+                            }
+                        })
+                    })
+                })
+
+            })
+        });
+
+    </script>
+{%endblock%}

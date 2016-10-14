@@ -1,0 +1,172 @@
+{% extends 'cmdb/index.html' %}
+{% block page-content %}
+    <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
+
+        <ol class="breadcrumb page-breadcrumb pull-left h4">
+            <li class="active"><a href='{% url 'asset' %}' class="fa  fa-arrow-circle-left"  data-hover="tooltip" title="返回" ></a>&nbsp;<span>{{ assetobj.assetno }}详细信息</span></li>
+        </ol>
+
+    </div>
+    <!--END TITLE & BREADCRUMB PAGE-->
+    <!--BEGIN CONTENT-->
+    <div class="page-content">
+        <div class="col-lg-12 detail">
+            <div class="panel panel-grey">
+                <div class="panel-heading">资产概述</div>
+                <div class="panel-body" style="padding:0px">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th >资产编号</th>
+                            <th >资产类型</th>
+                            <th >资产SN号</th>
+                            <th >资产型号</th>
+                            <th >业务IP</th>
+                            <th >管理IP</th>
+                            <th >生产环境</th>
+                            <th >IDC杋房</th>
+                            <th >机柜号</th>
+                            <th>数据类型</th>
+                            <th>状态</th>
+                            <th >管理员</th>
+                            <th>出厂日期</th>
+                            <th >更新时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                        <tr><td>{{ assetobj.assetno }}</td><td>{{ assetobj.get_asset_type_display}}</td><td>{{ assetobj.sn }}</td><td>{{ assetobj.servermodel }}</td><td>{{ assetobj.business_ip }}</td><td>{{ assetobj.server.rip }}</td>
+                            <td>{{ assetobj.get_business_unit_display }}</td><td>{{ assetobj.idc.name }}</td><td>{{ assetobj.idc_cabinet }}</td><td>{{ assetobj.get_create_type_display }}</td><td class="status{{assetobj.asset_status}}">{{ assetobj.get_asset_status_display}}</td><td>{{ assetobj.admin }}</td><td>{{ assetobj.release_date }}</td><td>{{ assetobj.update_date|date:"Y-m-d H:i:s" }}</td></tr>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if assetobj.server%}
+                <div >
+
+                    <div class="panel panel-violet">
+                        <div class="panel-heading">系统信息</div>
+                        <div class="panel-body" style="padding:0px">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>系统版本</th>
+                                    <th>运行时长</th>
+                                    <th >业务IP</th>
+                                    <th >管理IP</th>
+                                    <th>用户</th>
+                                    <th>更新时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                <tr>
+                                    <td>{{ assetobj.server.osrelease }}</td>
+                                    <td>{{ assetobj.server.uptime }}D</td>
+                                    <td>{{ assetobj.server.bip }}</td>
+                                    <td>{{ assetobj.server.rip }}</td>
+                                    <td>{{ assetobj.server.users }}</td>
+                                    <td>{{ assetobj.server.update_date|date:"Y-m-d H:i:s"  }}</td>
+                                </tr>
+                                {% for service in assetobj.server.services_set.select_related %}
+                                    <tr><td >应用端口</td><td colspan="5"><pre class="pre-scrollable"  style="text-align: left;padding: 0px;background-color: inherit;border: none;max-height: 150px;margin: 0px">{{ service.name }}</pre></td></tr>
+                                    <tr><td >定时任务</td><td colspan="5"><pre  style="text-align: left;padding: 0px;background-color: inherit;border: none;margin: 0px">{{ service.crontab }}</pre></td></tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">CPU信息</div>
+                        <div class="panel-body" style="padding:0px">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Cpu型号</th>
+                                    <th>Cpu逻辑个数</th>
+                                    <th>Cpu总核数</th>
+                                    <th>更新时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for cpu in assetobj.server.cpu_set.select_related %}
+                                    <tr>
+                                        <td>{{ cpu.cpumodel }}</td>
+                                        <td>{{ cpu.cpucount }}</td>
+                                        <td>{{ cpu.cpucorecount }}</td>
+                                        <td>{{ cpu.update_date|date:"Y-m-d H:i:s"  }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-green">
+                        <div class="panel-heading">内存信息</div>
+                        <div class="panel-body" style="padding:0px">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>内存大小</th>
+                                    <th>内存数量</th>
+                                    <th>单条大小</th>
+                                    <th>内存插槽数</th>
+                                    <th>更新时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for memory in assetobj.server.memory_set.select_related %}
+                                    <tr>
+                                        <td>{{ memory.memorytotal }}</td>
+                                        <td>{{ memory.memorycount }}</td>
+                                        <td>{{ memory.memorysizeper }}</td>
+                                        <td>{{ memory.memory_slot_count }}</td>
+                                        <td>{{ memory.update_date|date:"Y-m-d H:i:s"  }}</td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-blue">
+                        <div class="panel-heading">硬盘信息</div>
+                        <div class="panel-body" style="padding:0px">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>硬盘大小</th>
+                                    <th>硬盘数量</th>
+                                    <th>RAID级别</th>
+                                    <th>更新时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for disk in assetobj.server.disk_set.select_related %}
+                                    <tr>
+                                        <td>{{ disk.disktotalsize }}</td>
+                                        <td>{{ disk.diskcount }}</td>
+                                        <td>{{ disk.diskraid }}</td>
+                                        <td>{{ disk.update_date|date:"Y-m-d H:i:s"  }}</td>
+                                    </tr>
+                                {% endfor %}
+                                {% for disk in assetobj.server.disk_set.select_related %}
+                                    {% if disk.df %}
+                                        <tr>
+                                            <td >分区信息</td><td colspan="3">
+                                            <pre  style="text-align: left;padding: 0px;background-color: inherit;border: none;margin: 0px">{{ disk.df}}</pre></td></tr>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            {% endif%}
+    </div>
+    <!--END CONTENT-->
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'cmdb/index.html' %}
+
+{% block page-content %}
+    <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
+        <ol class="breadcrumb page-breadcrumb pull-left h4">
+            <li class=""><i class="fa fa-cubes"></i>&nbsp;<span>资产信息</span></li>
+        </ol>
+    </div>
+    <div class="page-content">
+        <div class="col-lg-12 detail">
+            <div class="panel panel-red">
+                <div class="panel-heading">下线服务器信息</div>
+                <div class="panel-body" style="padding:0px">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th >资产编号</th>
+                            <th >资产SN号</th>
+                            <th >资产型号</th>
+                            <th >管理IP</th>
+                            <th >生产环境</th>
+                            <th >IDC杋房</th>
+                            <th>硬盘大小</th>
+                            <th>硬盘数量</th>
+                            <th >RAID</th>
+                            <th>状态</th>
+                            <th >修改日期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          {% for asset in assetobj %}
+                            <tr>
+                                <td>{{ asset.assetno }}</td>
+                                <td>{{ asset.sn }}</td>
+                                <td>{{ asset.servermodel }}</td>
+                                 <td><a href="https://{{ asset.server.rip }}/login.html" target="_blank">{{ asset.server.rip}}</a></td>
+                                 <td>{{ asset.get_business_unit_display }}</td>
+                                <td>{{ asset.idc.name }}</td>
+                                {% for disk in asset.server.disk_set.select_related %}
+                                <td>{{ disk.disktotalsize}}</td>
+                                 <td>{{ disk.diskcount  }}</td>
+                                 <td>{{ disk.diskraid }}</td>
+                                {% endfor %}
+                               <td class="status{{ asset.asset_status }}">{{ asset.get_asset_status_display}}</td>
+                                <td>{{ asset.update_date|date:"Y-m-d"  }}</td>
+                            </tr>
+                         {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

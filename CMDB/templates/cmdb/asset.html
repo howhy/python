@@ -1,0 +1,96 @@
+{% extends 'cmdb/index.html' %}
+{% load customtags %}
+{% block page-content %}
+    <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
+        <ol class="breadcrumb page-breadcrumb pull-left h4">
+            <li class=""><i class="fa fa-th-list"></i>&nbsp;<a href="index.html">资产列表</a></li>
+        </ol>
+    </div>
+    <!--END TITLE & BREADCRUMB PAGE-->
+    <!--BEGIN CONTENT-->
+    <div class="page-content">
+        <div class="panel panel-green">
+            <div class="panel-heading">资产列表<span class="pull-right">
+               {% if add_perm %}
+                   <a href="/cmdb/edit?action=add" class="btn  btn-xs btn-blue" style="margin-right: -10px"><i class="fa fa-plus"></i>增加</a>
+               {% endif %}
+                {% if edit_perm %}
+                    <a href="#"  class="btn  btn-xs  btn-grey" id="editbtn" onclick="return tablecheck();" data-container="body" data-toggle="popover" data-placement="top" data-content="Please select a row of data ." style="margin-right: -10px"><i class="fa fa-edit"></i>编辑</a>
+                {% endif %}
+                {% if del_perm %}
+                    <a href="#"  id='delbtn' class="btn  btn-xs  btn-red" onclick="return tablecheck();" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Please select a row of data ."><i class="fa fa-trash-o"></i>删除</a>
+                {% endif %}<!--a href="#"  id='linebtn' class="btn  btn-xs btn-warning" onclick="return tablecheck();" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Please select a row of data ."><i class="fa fa-sort"></i>上下线</a--></span></div>
+            <div class="panel-body" style="padding:0px">
+                <table class="table table-hover table-striped table-bordered  tb-sticky-header" style="margin-bottom: 0px">
+                    <thead id="th">
+                    <tr >
+                        <th width="5%"><i class="fa fa-check-square-o" data-container="body" data-toggle="popover" data-placement="bottom" data-content="only select one"></i></th>
+                        <th >ID</th>
+                        <th >资产编号</th>
+                        <th >资产类型</th>
+                        <th >资产SN号</th>
+                        <th >资产型号</th>
+                        <th >业务IP</th>
+                        <th >管理IP</th>
+                        <th >生产环境</th>
+                        <th >IDC杋房</th>
+                        <th >机柜号</th>
+                        <th>数据类型</th>
+                        <th>状态</th>
+                        <th >管理员</th>
+                        <th>出厂日期</th>
+                        <th>更新时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for asset in assetobj %}
+                        <tr><td><input type="checkbox" /></td><td><a href="{% url 'detail' asset.id %}" data-hover="tooltip" title="open detail" style="color: #0e76a8">{{ asset.id }}</a></td><td>{{ asset.assetno }}</td><td>{{ asset.get_asset_type_display}}</td><td>{{ asset.sn }}</td><td>{{ asset.servermodel }}</td><td>{{ asset.business_ip }}</td><td>{{ asset.server.rip }}</td>
+                            <td>{{ asset.get_business_unit_display }}</td><td>{{ asset.idc.name }}</td><td>{{ asset.idc_cabinet }}</td><td>{{ asset.get_create_type_display }}</td><td class="status{{asset.asset_status}}">{{ asset.get_asset_status_display}}</td><td>{{ asset.admin}}</td><td>{{ asset.release_date|date:"Y-m-d"}}</td><td>{{ asset.update_date|date:"Y-m-d H:i:s" }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pull-right" style="height:60px;margin-top: -10px">
+                    <div id="table_id_paginate" class="dataTables_paginate paging_simple_numbers">
+                        <ul class="pagination">
+                            {% if assetobj.has_previous %}
+                                <li id="table_id_previous" tabindex="0" aria-controls="table_id" class="paginate_button previous"><a href="?page={{ assetobj.previous_page_number }}">&laquo;</a></li>
+                            {% endif %}
+                            {% for page_num in assetobj.paginator.page_range %}
+                                {% pageabs assetobj.number page_num %}
+                            {% endfor %}
+                            {% if assetobj.has_next %}
+                                <li id="table_id_next" tabindex="0" aria-controls="table_id" class="paginate_button next"><a href="?page={{ assetobj.next_page_number }}">&raquo;</a></li>
+                            {% endif %}
+                        </ul></div></div>
+            </div>
+        </div>
+    </div>
+    <!--END CONTENT-->
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        function tablecheck() {
+            checkyesorno=false
+            checkednum=0
+            $('table :checkbox').each(function () {
+                        var tf = $(this).prop('checked');
+                        if (tf){
+                            var assetid=$(this).parent().parent().siblings().find('a').text()
+                            $('#editbtn').attr('href',"{% url 'edit' %}?action=edit&id="+assetid)
+                            $('#delbtn').attr('href',"{% url 'edit' %}?action=del&id="+assetid)
+                            $('#linebtn').attr('href',"{% url 'edit' %}?action=line&id="+assetid)
+                            checkyesorno=true
+                            checkednum=checkednum+1
+                        }
+                    }
+            )
+            if (checkyesorno==false){
+                return false;
+            }
+            if(checkednum>1){
+                alert('只能选择一个')
+                return false
+            }
+        }
+    </script>
+{% endblock %}

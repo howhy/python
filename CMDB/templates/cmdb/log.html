@@ -1,0 +1,28 @@
+{% extends 'cmdb/index.html' %}
+
+{% block page-content %}
+    <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
+        <ol class="breadcrumb page-breadcrumb pull-left h4">
+            <li class=""><i class="fa fa-file-text"></i><span>日志管理</span></li>
+        </ol>
+    </div>
+    <div class="page-content">
+    <textarea style="overflow: auto;width: 100%;height: 900px;" readonly="readonly" id="logtextarea">
+
+    </textarea>
+    </div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            $.get('/static/log.log',function (data) {
+                $('#logtextarea').val(data);
+                MsgScroll();
+            });
+            function MsgScroll(){
+                $('#logtextarea').animate({
+                    scrollTop:$('#logtextarea')[0].scrollHeight},800);
+            }
+        })
+    </script>
+{% endblock %}

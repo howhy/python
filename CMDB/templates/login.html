@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block page-container %}
+    <div class="panel panel-default sign-panel">
+        <div class="panel-heading sign-panel-header text-center">
+            <span class=""><img src="/static/img/logo-small.png" alt=""/><span class='media-middle sign-title'>CMDB</span></span>
+        </div>
+        <div class="panel-body sign-panel-body ">
+            <form action="{% url 'login' %}" method="post" role="form" id="sign-form">{% csrf_token %}
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                        <input class="form-control btn-group-vertical" type="text" name="username" placeholder="UserName"/>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="input-group">
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></div>
+                        <input class="form-control" type="password" name="password" placeholder="PassWord"/>
+                    </div>
+                </div>
+                <div class="sign-err text-center">
+                    <small class="red">{{ login_err }}</small>
+                </div>
+                <div class=""><button class="btn-info form-control"  type="submit">login</button> </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#sign-form').bootstrapValidator({
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                username: {
+                    validators: {
+                        notEmpty: {
+                            message: 'The username is required and cannot be empty'
+                        },
+                        stringLength: {
+                            min: 5,
+                            max: 30,
+                            message: 'The username must be more than 6 '
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: 'The username can only consist of alphabetical, number and underscore'
+                        }
+                    }
+                },
+                password:{
+                    validators:{
+                        notEmpty:{
+                            'message': "the password is required and cannot be empty"
+                        },
+                        stringLength:{
+                            min:8,
+                            max:30,
+                            message:'The password must be more than 8 '
+                        },
+                    }
+                },
+            }
+        });
+    });
+</script>
+{% endblock %}

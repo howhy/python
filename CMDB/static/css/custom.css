@@ -1,0 +1,36 @@
+.sign-panel{
+    margin: 60px auto;
+    max-width: 380px;
+    padding: 0px 0px 15px 0px;
+}
+.sign-panel-body{
+    padding-top: 30px;
+}
+.sign-panel-header{
+    background: none repeat scroll 0 0 #34495e !important;
+    height: 80px;
+}
+.sign-title{
+    color: #fafffb;
+    font-size: xx-large;
+}
+
+.sign-err{
+    padding-bottom: 15px;
+    color: red;
+}
+table tr th{
+   text-align: center;
+}
+table tr td{
+   text-align: center;
+}
+.status1{
+    color:green;
+}
+.status2{
+    color:red;
+}
+.detail .panel-heading{
+    line-height: 12px;
+}
